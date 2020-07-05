@@ -167,12 +167,14 @@ export default {
 
     async save() {
       if (this.editedIndex > -1) {
+        console.log("yeah");
         db.collection("work1")
           .doc(this.desserts[this.editedIndex].id)
           .set(this.editedItem);
         Object.assign(this.desserts[this.editedIndex], this.editedItem);
       } else {
         this.desserts.push(this.editedItem);
+        db.collection("work1").add(this.editedItem);
       }
       this.close();
     },
