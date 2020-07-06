@@ -11,9 +11,16 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field label="Login" name="login" prepend-icon="mdi-account" type="text"></v-text-field>
+                  <v-text-field
+                    v-model="email"
+                    label="Login"
+                    name="login"
+                    prepend-icon="mdi-account"
+                    type="text"
+                  ></v-text-field>
 
                   <v-text-field
+                    v-model="password"
                     id="password"
                     label="Password"
                     name="password"
@@ -25,7 +32,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="primary">Login</v-btn>
-                <v-btn color="secondary">Register</v-btn>
+                <v-btn color="secondary" @click="register">Register</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -36,5 +43,57 @@
 </template>
 
 <script>
-export default {};
+import firebase from "firebase";
+import "firebase/auth";
+import { db } from "../main";
+
+export default {
+  data() {
+    return {
+      email: "",
+      password: "",
+      error: "",
+    };
+  },
+  methods: {
+    register() {
+      let token, userId;
+      let userEmail = this.email;
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.email, this.password)
+        .then((data) => {
+          userId = data.user.uid;
+          return data.user.getIdToken();
+        })
+        .then((idToken) => {
+          token = idToken;
+
+          const userCredentials = {
+            email: userEmail,
+            createdAt: new Date().toLocaleString("en-US", {
+              timeZone: "Asia/Bangkok",
+            }),
+            userId,
+            status: "user",
+          };
+
+          return db.doc(`/users/${newUser.avatarName}`).set(userCredentials);
+        })
+        .then(() => {
+          return res.status(201).json({ token });
+        })
+        .catch((err) => {
+          console.error(err);
+          if (err.code === "auth/email-already-in-use") {
+            return res.status(400).json({ email: "Email is already in use" });
+          } else {
+            return res
+              .status(500)
+              .json({ general: "Something went wrong, please try again" });
+          }
+        });
+    },
+  },
+};
 </script>

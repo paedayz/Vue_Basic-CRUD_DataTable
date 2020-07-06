@@ -6,7 +6,9 @@ import vuetify from "./plugins/vuetify";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import config from "./config";
+import axios from "axios";
 
+Vue.prototype.$axios = axios;
 Vue.config.productionTip = false;
 
 firebase.initializeApp(config);
