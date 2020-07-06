@@ -12,6 +12,9 @@
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
+            <v-btn color="secondary" class="mb-2" dark @click="logOut"
+              >Logout</v-btn
+            >
             <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"
               >New Item</v-btn
             >
@@ -78,6 +81,8 @@
 </template>
 
 <script>
+import firebase from "firebase/app";
+import "firebase/auth";
 import { db } from "../main";
 export default {
   data: () => ({
@@ -177,6 +182,15 @@ export default {
         db.collection("work1").add(this.editedItem);
       }
       this.close();
+    },
+
+    async logOut() {
+      try {
+        const data = await firebase.auth().signOut();
+        this.$router.replace({ name: "Home" });
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 };

@@ -31,7 +31,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary">Login</v-btn>
+                <v-btn color="primary" @click="login">Login</v-btn>
                 <v-btn color="secondary" @click="register">Register</v-btn>
               </v-card-actions>
             </v-card>
@@ -56,43 +56,27 @@ export default {
     };
   },
   methods: {
-    register() {
-      let token, userId;
-      let userEmail = this.email;
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.email, this.password)
-        .then((data) => {
-          userId = data.user.uid;
-          return data.user.getIdToken();
-        })
-        .then((idToken) => {
-          token = idToken;
-
-          const userCredentials = {
-            email: userEmail,
-            createdAt: new Date().toLocaleString("en-US", {
-              timeZone: "Asia/Bangkok",
-            }),
-            userId,
-            status: "user",
-          };
-
-          return db.doc(`/users/${newUser.avatarName}`).set(userCredentials);
-        })
-        .then(() => {
-          return res.status(201).json({ token });
-        })
-        .catch((err) => {
-          console.error(err);
-          if (err.code === "auth/email-already-in-use") {
-            return res.status(400).json({ email: "Email is already in use" });
-          } else {
-            return res
-              .status(500)
-              .json({ general: "Something went wrong, please try again" });
-          }
-        });
+    async register() {
+      try {
+        const user = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(this.email, this.password);
+        console.log(user);
+        this.$router.replace({ name: "DataTable" });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async login() {
+      try {
+        const user = await firebase
+          .auth()
+          .signInWithEmailAndPassword(this.email, this.password);
+        console.log(user);
+        this.$router.replace({ name: "DataTable" });
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 };
