@@ -31,6 +31,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
+                <v-btn color="primary" @click="loginWithMicrosoft">Microsoft</v-btn>
                 <v-btn color="primary" @click="loginWithGmail">Google</v-btn>
                 <v-btn color="primary" @click="loginWithFacebook">Facebook</v-btn>
                 <v-btn color="primary" @click="login">Login</v-btn>
@@ -117,6 +118,24 @@ export default {
 
     async loginWithGmail() {
       let provider = new firebase.auth.GoogleAuthProvider();
+
+      try {
+        let user = await firebase.auth().signInWithPopup(provider);
+        console.log(user);
+        this.$router.replace({ name: "DataTable" });
+      } catch (err) {
+        console.log(err);
+        if (err.code == "auth/invalid-email") {
+          alert("Please Fill Your Email");
+        } else if (err.code == "auth/wrong-password") {
+          alert("Wrong Password");
+        } else {
+        }
+      }
+    },
+
+    async loginWithMicrosoft() {
+      let provider = new firebase.auth.OAuthProvider("microsoft.com");
 
       try {
         let user = await firebase.auth().signInWithPopup(provider);
