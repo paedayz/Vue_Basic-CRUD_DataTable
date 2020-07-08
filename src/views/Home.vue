@@ -4,12 +4,21 @@
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
+            <div id="recaptcha"></div>
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark flat>
-                <v-toolbar-title>Login form</v-toolbar-title>
+                <v-toolbar-title>LOGIN FORM</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
+
               <v-card-text>
+                <v-card-actions>
+                  <span>Login with :</span>
+                  <v-btn color="primary" @click="loginWithMicrosoft">Microsoft</v-btn>
+                  <v-btn color="primary" @click="loginWithGmail">Google</v-btn>
+                  <v-btn color="primary" @click="loginWithFacebook">Facebook</v-btn>
+                  <v-btn color="primary" @click="loginWithPhoneNumber">Phone Number</v-btn>
+                </v-card-actions>
                 <v-form>
                   <v-text-field
                     v-model="email"
@@ -31,9 +40,6 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="loginWithMicrosoft">Microsoft</v-btn>
-                <v-btn color="primary" @click="loginWithGmail">Google</v-btn>
-                <v-btn color="primary" @click="loginWithFacebook">Facebook</v-btn>
                 <v-btn color="primary" @click="login">Login</v-btn>
                 <v-btn color="secondary" @click="register">Register</v-btn>
                 <v-btn color="red" @click="resetPassword">Reset</v-btn>
@@ -150,6 +156,22 @@ export default {
         } else {
         }
       }
+    },
+
+    async loginWithPhoneNumber() {
+      let recaptcha = new firebase.auth.RecaptchaVerifier("recaptcha");
+      let number = "+66882804276";
+      let router = this.$router;
+      firebase
+        .auth()
+        .signInWithPhoneNumber(number, recaptcha)
+        .then(function(e) {
+          let code = prompt("enter the otp", "");
+          if (code == null) return;
+          e.confirm(code).then(function(result) {
+            router.replace({ name: "DataTable" });
+          });
+        });
     }
   }
 };
