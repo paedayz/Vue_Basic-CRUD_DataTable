@@ -160,18 +160,26 @@ export default {
 
     async loginWithPhoneNumber() {
       let recaptcha = new firebase.auth.RecaptchaVerifier("recaptcha");
-      let number = "+66882804276";
+      let number = prompt("enter phone number");
+      let THNumber = "+66";
       let router = this.$router;
-      firebase
-        .auth()
-        .signInWithPhoneNumber(number, recaptcha)
-        .then(function(e) {
-          let code = prompt("enter the otp", "");
-          if (code == null) return;
-          e.confirm(code).then(function(result) {
-            router.replace({ name: "DataTable" });
+
+      if (!number.startsWith("+66")) {
+        THNumber = THNumber + number;
+      }
+
+      if (number !== null) {
+        firebase
+          .auth()
+          .signInWithPhoneNumber(THNumber, recaptcha)
+          .then(function(e) {
+            let code = prompt("enter the otp", "");
+            if (code == null) return;
+            e.confirm(code).then(function(result) {
+              router.replace({ name: "DataTable" });
+            });
           });
-        });
+      }
     }
   }
 };
